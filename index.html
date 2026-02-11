@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لیست اقدامات اجرایی - رویال پارس</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn-font@v33.003/dist/font-face.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        royal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6', // Teal primary
+                            800: '#115e59',
+                            900: '#0f172a', // Dark background
+                        },
+                        gold: {
+                            500: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #f8fafc; /* Light gray for web */
+        }
+        
+        /* استایل‌های چک‌باکس */
+        .custom-checkbox input:checked + div {
+            background-color: #14b8a6;
+            border-color: #14b8a6;
+        }
+        .custom-checkbox input:checked + div svg {
+            display: block;
+        }
+        
+        /* تنظیمات مخصوص پرینت */
+        @media print {
+            @page {
+                size: A4;
+                margin: 1.5cm;
+            }
+            body {
+                background-color: white;
+                color: black;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-break-inside {
+                break-inside: avoid;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .shadow-lg, .shadow-xl {
+                box-shadow: none !important;
+            }
+            .bg-white {
+                background-color: transparent !important;
+            }
+            .text-royal-800 {
+                color: black !important;
+            }
+            /* حذف رنگ‌های پس‌زمینه برای صرفه‌جویی در جوهر */
+            .bg-royal-50, .bg-blue-50 {
+                background-color: #f3f3f3 !important;
+                -webkit-print-color-adjust: exact;
+            }
+            border {
+                border-color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6 md:p-12 text-slate-800">
+
+    <!-- دکمه شناور پرینت (در چاپ دیده نمی‌شود) -->
+    <div class="fixed bottom-8 left-8 no-print z-50">
+        <button onclick="window.print()" class="bg-royal-800 hover:bg-royal-900 text-white font-bold py-4 px-6 rounded-full shadow-xl flex items-center gap-3 transition-all transform hover:scale-105">
+            <i class="fa-solid fa-print text-xl"></i>
+            <span>چاپ لیست</span>
+        </button>
+    </div>
+
+    <!-- کانتینر اصلی سند -->
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-none md:rounded-lg overflow-hidden border border-slate-200">
+        
+        <!-- هدر سند -->
+        <header class="bg-royal-900 text-white p-8 border-b-4 border-gold-500 print:bg-white print:text-black print:border-black print:p-0 print:mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold mb-2">لیست جامع اقدامات اجرایی (Action Plan)</h1>
+                    <p class="text-slate-300 print:text-slate-600 text-sm md:text-base">کمپین نوروز ۱۴۰۵ | مرکز خرید رویال پارس</p>
+                </div>
+                <div class="text-left hidden md:block print:block">
+                    <div class="font-bold text-xl tracking-widest">ROYAL PARS</div>
+                    <div class="text-xs text-slate-400 print:text-black">Marketing Dept.</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- محتوای اصلی -->
+        <div class="p-8 print:p-0">
+
+            <!-- بخش ۱: رسانه و تبلیغات محیطی -->
+            <section class="mb-10 print-break-inside">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
+                    <span class="bg-royal-800 text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm print:text-black print:border print:border-black print:bg-transparent">۱</span>
+                    <h2 class="text-xl font-bold text-royal-800">مدیریت رسانه‌های محیطی و بصری</h2>
+                </div>
+                
+                <table class="w-full text-sm md:text-base border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-500 text-right print:bg-gray-100">
+                            <th class="p-3 w-12 text-center">#</th>
+                            <th class="p-3">شرح اقدام</th>
+                            <th class="p-3 w-32 hidden md:table-cell print:table-cell">مسئول</th>
+                            <th class="p-3 w-32 hidden md:table-cell print:table-cell">وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <!-- آیتم ۱ -->
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>فراخوان تیزر:</strong> دریافت فایل‌های باکیفیت از برندهای انکر (درسا، بادی‌اسپینر و...)</td>
+                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">تیم محتوا</td>
+                            <td class="p-3 hidden md:table-cell print:table-cell"><span class="border px-2 py-1 rounded text-xs">در دست اقدام</span></td>
+                        </tr>
+                        <!-- آیتم ۲ -->
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>موشن امکانات:</strong> تولید ویدیو معرفی خدمات (پارکینگ، فودکورت) برای نمایشگر همکف</td>
+                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">تیم گرافیک</td>
+                            <td class="p-3 hidden md:table-cell print:table-cell"><span class="border px-2 py-1 rounded text-xs">---</span></td>
+                        </tr>
+                        <!-- آیتم ۳ -->
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>TV Wall بیرونی:</strong> استعلام تعرفه شهرداری و بررسی فنی نمایشگر</td>
+                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">مدیریت اجرایی</td>
+                            <td class="p-3 hidden md:table-cell print:table-cell"><span class="border px-2 py-1 rounded text-xs">---</span></td>
+                        </tr>
+                        <!-- آیتم ۴ -->
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>بیلبوردهای درسا:</strong> نهایی‌سازی قیمت‌گذاری یا تهاتر برای ایام نوروز</td>
+                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">مدیریت</td>
+                            <td class="p-3 hidden md:table-cell print:table-cell"><span class="border px-2 py-1 rounded text-xs">---</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- بخش ۲: دیتابیس و پیامک -->
+            <section class="mb-10 print-break-inside">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
+                    <span class="bg-royal-800 text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm print:text-black print:border print:border-black print:bg-transparent">۲</span>
+                    <h2 class="text-xl font-bold text-royal-800">بازاریابی داده‌محور و پیامکی</h2>
+                </div>
+                <table class="w-full text-sm md:text-base border-collapse">
+                    <tbody class="divide-y divide-slate-100">
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 w-12 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>تجمیع دیتا:</strong> دریافت فایل اکسل مشتریان از تمام غرفه‌های فعال</td>
+                            <td class="p-3 w-32 text-slate-500 hidden md:table-cell print:table-cell">روابط عمومی</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>بخش‌بندی (Segmentation):</strong> تفکیک لیست به LBS (منطقه‌ای)، مشاغل خاص و VIP</td>
+                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">دیجیتال مارکتینگ</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>استراتژی نرخ تبدیل:</strong> تدوین سناریوی پیامک پلکانی و تست A/B متن‌ها</td>
+                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">دیجیتال مارکتینگ</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- بخش ۳: توسعه تجاری و B2B -->
+            <section class="mb-10 print-break-inside">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
+                    <span class="bg-royal-800 text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm print:text-black print:border print:border-black print:bg-transparent">۳</span>
+                    <h2 class="text-xl font-bold text-royal-800">توسعه تجاری و قراردادها</h2>
+                </div>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg print:bg-transparent print:border print:border-slate-200">
+                        <input type="checkbox" class="mt-1 w-4 h-4 accent-royal-800">
+                        <div>
+                            <strong class="block text-slate-800">فین‌تک و قراردادهای اعتباری:</strong>
+                            <span class="text-slate-600 text-sm">ایجاد ارتباط و زمینه‌سازی قرارداد با تارا، کارکنان فولاد، نفت، پتروکارت، اسنپ‌پی و سایر موارد مرتبط.</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg print:bg-transparent print:border print:border-slate-200">
+                        <input type="checkbox" class="mt-1 w-4 h-4 accent-royal-800">
+                        <div>
+                            <strong class="block text-slate-800">پروموت اختصاصی:</strong>
+                            <span class="text-slate-600 text-sm">برنامه‌ریزی برای فروش سازمانی و کالکشن‌های جدید (به عنوان مثال: پاما، درسا و سایر فروشگاه‌های متقاضی).</span>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- بخش ۴: کمپین خیریه -->
+            <section class="print-break-inside">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
+                    <span class="bg-royal-800 text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm print:text-black print:border print:border-black print:bg-transparent">۴</span>
+                    <h2 class="text-xl font-bold text-royal-800">مسئولیت اجتماعی و اتمسفر (CSR)</h2>
+                </div>
+                <table class="w-full text-sm md:text-base border-collapse">
+                    <tbody class="divide-y divide-slate-100">
+                        <tr class="hover:bg-slate-50 bg-royal-50 print:bg-transparent">
+                            <td class="p-3 w-12 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>تدوین طرح جامع خیریه:</strong> تدوین دقیق و با جزئیات کامل بخش مالی و اجرایی کمپین خیریه، به همراه توجیه اقتصادی و سیستم ریوارد مارکتینگ (Reward Marketing).</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>مکانیسم اجرایی:</strong> نهایی‌سازی دقیق نحوه توزیع کارت‌ها و محل استقرار صندوق‌ها</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>شفافیت مالی:</strong> آماده‌سازی پیش‌نویس قرارداد با موسسات خیریه</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
+                            <td class="p-3"><strong>اتمسفر و دکور:</strong> طراحی فضا و دکوراسیون متناسب با شرایط اجتماعی و وضعیت عمومی جامعه در هفته‌های پایانی اسفند.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- بخش ۵ (جدید): برآورد مالی -->
+            <section class="page-break pt-8 print-break-inside">
+                <div class="flex items-center gap-3 mb-6 border-b-4 border-gold-500 pb-2">
+                    <span class="bg-gold-500 text-white w-10 h-10 flex items-center justify-center rounded-lg font-bold text-lg print:text-black print:border print:border-black print:bg-transparent">۵</span>
+                    <h2 class="text-2xl font-bold text-royal-800">برآورد اولیه هزینه‌های کمپین (تا ۱۵ فروردین)</h2>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm md:text-base border-collapse border border-slate-200">
+                        <thead>
+                            <tr class="bg-royal-800 text-white print:bg-gray-200 print:text-black">
+                                <th class="p-4 border border-slate-300 text-center w-16">ردیف</th>
+                                <th class="p-4 border border-slate-300 text-right">عنوان هزینه</th>
+                                <th class="p-4 border border-slate-300 text-center w-48">برآورد هزینه (تومان)</th>
+                                <th class="p-4 border border-slate-300 text-right">توضیحات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr>
+                                <td class="p-4 border border-slate-200 text-center font-bold">۱</td>
+                                <td class="p-4 border border-slate-200 font-bold">دکور و هزینه های چاپ مربوط به برنامه کمپین فروش نوروز مجموعه - خیریه</td>
+                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۳۰,۰۰۰,۰۰۰ - ۴۰,۰۰۰,۰۰۰</td>
+                                <td class="p-4 border border-slate-200 text-sm">شامل دکور هفت‌سین، باکس‌های همدلی و فضاسازی لابی</td>
+                            </tr>
+                            <tr class="bg-slate-50 print:bg-white">
+                                <td class="p-4 border border-slate-200 text-center font-bold">۲</td>
+                                <td class="p-4 border border-slate-200 font-bold">هزینه چاپ اقلام مصرفی و تبلیغاتی</td>
+                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۱۰,۰۰۰,۰۰۰ - ۱۵,۰۰۰,۰۰۰</td>
+                                <td class="p-4 border border-slate-200 text-sm">شامل گیفت‌کارت‌های ورودی، کارت‌های خیریه و رول‌آپ‌های اطلاع‌رسانی احتمالی</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 border border-slate-200 text-center font-bold">۳</td>
+                                <td class="p-4 border border-slate-200 font-bold">کمپین پیامکی (SMS Marketing)</td>
+                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۳۰,۰۰۰,۰۰۰ - ۵۰,۰۰۰,۰۰۰</td>
+                                <td class="p-4 border border-slate-200 text-sm">ارسال انبوه منطقه‌ای (LBS) و خوش‌آمدگویی هوشمند</td>
+                            </tr>
+                            <tr class="bg-slate-50 print:bg-white">
+                                <td class="p-4 border border-slate-200 text-center font-bold">۴</td>
+                                <td class="p-4 border border-slate-200 font-bold">شارژ اکانت اسنپ (تسهیلات حمل و نقل)</td>
+                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۳۰,۰۰۰,۰۰۰ - ۵۰,۰۰۰,۰۰۰</td>
+                                <td class="p-4 border border-slate-200 text-sm">کد تخفیف اختصاصی برای سفرهای به مقصد مجتمع</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 border border-slate-200 text-center font-bold">۵</td>
+                                <td class="p-4 border border-slate-200 font-bold">تیم تولید محتوا و مدیا</td>
+                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۱۲۰,۰۰۰,۰۰۰</td>
+                                <td class="p-4 border border-slate-200 text-sm">هزینه تیم مستقر برای پوشش کامل بازه ۴۵ روزه کمپین</td>
+                            </tr>
+                            <tr class="bg-yellow-50 print:bg-white">
+                                <td class="p-4 border border-slate-200 text-center font-bold">۶</td>
+                                <td class="p-4 border border-slate-200 font-bold">بودجه کمپین نوروز و مسئولیت اجتماعی</td>
+                                <td class="p-4 border border-slate-200 text-center font-bold text-slate-500">مشروط</td>
+                                <td class="p-4 border border-slate-200 text-sm italic">دقیق‌تر در پروپزال جداگونه با جزئیات کامل ارسال می‌شود.</td>
+                            </tr>
+                            <tr class="bg-yellow-50 print:bg-white">
+                                <td class="p-4 border border-slate-200 text-center font-bold">۷</td>
+                                <td class="p-4 border border-slate-200 font-bold">هزینه بخش مارکتینگ</td>
+                                <td class="p-4 border border-slate-200 text-center font-bold text-slate-500">مشروط</td>
+                                <td class="p-4 border border-slate-200 text-sm italic">بعد از تکمیل و ارائه پروپزال نهایی کمپین نوروزی مشخص می‌شود.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 border border-slate-200 text-center font-bold">۸</td>
+                                <td class="p-4 border border-slate-200 font-bold">سایر موارد (نامشخص)</td>
+                                <td class="p-4 border border-slate-200 text-center text-slate-500">---</td>
+                                <td class="p-4 border border-slate-200 text-sm">شامل ساماندهی لایت‌باکس‌ها، جوایز اهدایی غرفه‌ها و...</td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="bg-slate-100 font-bold print:bg-gray-100">
+                            <tr>
+                                <td colspan="2" class="p-4 text-left">جمع کل برآورد اولیه (تومان):</td>
+                                <td class="p-4 text-center font-mono text-xl text-royal-800">~ ۲۲۰ تا ۲۷۵ میلیون</td>
+                                <td class="p-4 text-xs text-slate-500 font-normal text-right">سقف نهایی پیش‌بینی شده ۳۵۰ میلیون تومان</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- بخش ۶: بروزرسانی فاز پایانی -->
+            <section class="mt-8 mb-8 print-break-inside">
+                <div class="bg-blue-50 border-r-4 border-blue-500 p-6 rounded-lg print:border-black print:bg-transparent print:border">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fa-solid fa-sync text-blue-600 text-xl print:text-black"></i>
+                        <h3 class="font-bold text-lg text-blue-800 print:text-black">برنامه‌ریزی فاز پایانی (۲۰ روز آخر)</h3>
+                    </div>
+                    <p class="text-slate-700 text-sm leading-relaxed text-justify">
+                        با توجه به متغیرهای محیطی و اجرایی متعدد، برنامه عملیاتی مربوط به <strong>۲۰ روز پایانی کمپین</strong> (منتهی به ۱۵ فروردین)، مجدداً بازبینی و آپدیت شده و متعاقباً در قالب یک فایل ارائه جداگانه و تفصیلی ارسال خواهد شد.
+                    </p>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- فوتر -->
+        <footer class="bg-slate-100 p-6 border-t border-slate-200 print:bg-white print:border-t-2 print:border-black">
+            <div class="flex justify-between items-center text-sm text-slate-500 print:text-black">
+                <div>تاریخ به‌روزرسانی: بهمن ۱۴۰۴</div>
+                <div class="flex gap-10">
+                    <span>امضاء مسئول مارکتینگ: .................</span>
+                    <span>امضاء مدیریت: .................</span>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+</body>
+</html>
