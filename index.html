@@ -1,487 +1,385 @@
 import React, { useState, useMemo } from 'react';
 
-// --- Custom SVG Icons (No external dependencies required) ---
-const IconBase = ({ children, size = 24, className = "", strokeWidth = 2 }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-    {children}
-  </svg>
-);
-
-const CalendarIcon = (props) => <IconBase {...props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></IconBase>;
-const UserIcon = (props) => <IconBase {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
-const HospitalIcon = (props) => <IconBase {...props}><path d="M12 6v4"/><path d="M14 14h-4"/><path d="M14 18h-4"/><path d="M14 8h-4"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2"/><path d="M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18"/></IconBase>;
-const ActivityIcon = (props) => <IconBase {...props}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></IconBase>;
-const SunIcon = (props) => <IconBase {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></IconBase>;
-const SunsetIcon = (props) => <IconBase {...props}><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="M16 6l-4-4-4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></IconBase>;
-const MoonIcon = (props) => <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></IconBase>;
-const UsersIcon = (props) => <IconBase {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconBase>;
-
-// --- Data Preparation ---
+// ==========================================
+// 1. DATA PREPARATION (Updated to exact final request)
+// ==========================================
 const infectiousData = [
-  { date: '1/12', doctor: 'دارابی' }, { date: '2/12', doctor: 'پوراحسانی' },
-  { date: '3/12', doctor: 'پوراحسانی' }, { date: '4/12', doctor: 'آرزویی' },
-  { date: '5/12', doctor: 'آرزویی' }, { date: '6/12', doctor: 'پوراحسانی' },
-  { date: '7/12', doctor: 'شمی پور' }, { date: '8/12', doctor: 'شمی پور' },
-  { date: '9/12', doctor: 'پوراحسانی' }, { date: '10/12', doctor: 'پوراحسانی' },
-  { date: '11/12', doctor: 'دارابی' }, { date: '12/12', doctor: 'دارابی' },
-  { date: '13/12', doctor: 'دارابی' }, { date: '14/12', doctor: 'رضوی' },
-  { date: '15/12', doctor: 'دارابی' }, { date: '16/12', doctor: 'دارابی' },
-  { date: '17/12', doctor: 'پوراحسانی' }, { date: '18/12', doctor: 'آرزویی' },
-  { date: '19/12', doctor: 'آرزویی' }, { date: '20/12', doctor: 'پوراحسانی' },
-  { date: '21/12', doctor: 'معارفی' }, { date: '22/12', doctor: 'معارفی' },
-  { date: '23/12', doctor: 'پوراحسانی' }, { date: '24/12', doctor: 'پوراحسانی' },
-  { date: '25/12', doctor: 'آرزویی' }, { date: '26/12', doctor: 'آرزویی' },
-  { date: '27/12', doctor: 'پوراحسانی' }, { date: '28/12', doctor: 'معارفی' },
-  { date: '29/12', doctor: 'شمی پور' }
+  { date: '1', doctor: 'دارابی' }, { date: '2', doctor: 'پوراحسانی' },
+  { date: '3', doctor: 'پوراحسانی' }, { date: '4', doctor: 'آرزویی' },
+  { date: '5', doctor: 'آرزویی' }, { date: '6', doctor: 'پوراحسانی' },
+  { date: '7', doctor: 'شمی پور' }, { date: '8', doctor: 'شمی پور' },
+  { date: '9', doctor: 'پوراحسانی' }, { date: '10', doctor: 'پوراحسانی' },
+  { date: '11', doctor: 'دارابی' }, { date: '12', doctor: 'دارابی' },
+  { date: '13', doctor: 'دارابی' }, { date: '14', doctor: 'رضوی' },
+  { date: '15', doctor: 'دارابی' }, { date: '16', doctor: 'دارابی' },
+  { date: '17', doctor: 'پوراحسانی' }, { date: '18', doctor: 'آرزویی' },
+  { date: '19', doctor: 'آرزویی' }, { date: '20', doctor: 'پوراحسانی' },
+  { date: '21', doctor: 'معارفی' }, { date: '22', doctor: 'معارفی' },
+  { date: '23', doctor: 'پوراحسانی' }, { date: '24', doctor: 'پوراحسانی' },
+  { date: '25', doctor: 'آرزویی' }, { date: '26', doctor: 'آرزویی' },
+  { date: '27', doctor: 'پوراحسانی' }, { date: '28', doctor: 'معارفی' },
+  { date: '29', doctor: 'شمی پور' }
 ];
 
 const internalData = [
-  { date: '1/12', doctor: 'معارفی' }, { date: '2/12', doctor: 'حسن نژاد' },
-  { date: '3/12', doctor: 'معارفی' }, { date: '4/12', doctor: 'شمی پور' },
-  { date: '5/12', doctor: 'قلاوند' }, { date: '6/12', doctor: 'مظفری' },
-  { date: '7/12', doctor: 'شمی پور' }, { date: '8/12', doctor: 'شمی پور' },
-  { date: '9/12', doctor: 'مظفری' }, { date: '10/12', doctor: 'معارفی' },
-  { date: '11/12', doctor: 'حسن نژاد' }, { date: '12/12', doctor: 'معارفی' },
-  { date: '13/12', doctor: 'پورکاوه' }, { date: '14/12', doctor: 'شمی پور' },
-  { date: '15/12', doctor: 'پورکاوه' }, { date: '16/12', doctor: 'شمی پور' },
-  { date: '17/12', doctor: 'پورکاوه' }, { date: '18/12', doctor: 'قلاوند' },
-  { date: '19/12', doctor: 'حسن نژاد' }, { date: '20/12', doctor: 'پورکاوه' },
-  { date: '21/12', doctor: 'معارفی' }, { date: '22/12', doctor: 'معارفی' },
-  { date: '23/12', doctor: 'شمی پور' }, { date: '24/12', doctor: 'حسن نژاد' },
-  { date: '25/12', doctor: 'معارفی' }, { date: '26/12', doctor: 'معارفی' },
-  { date: '27/12', doctor: 'شمی پور' }, { date: '28/12', doctor: 'معارفی' },
-  { date: '29/12', doctor: 'شمی پور' }
+  { date: '1', doctor: 'معارفی' }, { date: '2', doctor: 'حسن نژاد' },
+  { date: '3', doctor: 'معارفی' }, { date: '4', doctor: 'شمی پور' },
+  { date: '5', doctor: 'قلاوند' }, { date: '6', doctor: 'مظفری' },
+  { date: '7', doctor: 'شمی پور' }, { date: '8', doctor: 'شمی پور' },
+  { date: '9', doctor: 'مظفری' }, { date: '10', doctor: 'معارفی' },
+  { date: '11', doctor: 'حسن نژاد' }, { date: '12', doctor: 'معارفی' },
+  { date: '13', doctor: 'پورکاوه' }, { date: '14', doctor: 'شمی پور' },
+  { date: '15', doctor: 'پورکاوه' }, { date: '16', doctor: 'شمی پور' },
+  { date: '17', doctor: 'پورکاوه' }, { date: '18', doctor: 'قلاوند' },
+  { date: '19', doctor: 'حسن نژاد' }, { date: '20', doctor: 'پورکاوه' },
+  { date: '21', doctor: 'معارفی' }, { date: '22', doctor: 'معارفی' },
+  { date: '23', doctor: 'شمی پور' }, { date: '24', doctor: 'حسن نژاد' },
+  { date: '25', doctor: 'معارفی' }, { date: '26', doctor: 'معارفی' },
+  { date: '27', doctor: 'شمی پور' }, { date: '28', doctor: 'معارفی' },
+  { date: '29', doctor: 'شمی پور' }
 ];
 
 const shafaData = [
-  { date: '1/12', morning: 'علی مرادی', evening: 'علی مرادی', night: '' },
-  { date: '2/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
-  { date: '3/12', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
-  { date: '4/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
-  { date: '5/12', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
-  { date: '6/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
-  { date: '7/12', morning: 'آرزویی', evening: 'حسن نژاد', night: 'حسن نژاد' },
-  { date: '8/12', morning: 'علی مرادی', evening: 'حسن نژاد', night: 'حسن نژاد' },
-  { date: '9/12', morning: '', evening: 'عباسی', night: 'آرزویی' },
-  { date: '10/12', morning: '', evening: 'شمی پور', night: 'شمی پور' },
-  { date: '11/12', morning: '', evening: 'قلاوند', night: 'قلاوند' },
-  { date: '12/12', morning: '', evening: 'مظفری', night: 'مظفری' },
-  { date: '13/12', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
-  { date: '14/12', morning: 'آرزویی', evening: 'مظفری', night: 'مظفری' },
-  { date: '15/12', morning: 'براتی', evening: 'براتی', night: '' },
-  { date: '16/12', morning: '', evening: 'آرزویی', night: 'آرزویی' },
-  { date: '17/12', morning: 'آرزویی', evening: 'معصومی', night: 'معصومی' },
-  { date: '18/12', morning: '', evening: '', night: 'امین دزفولی' },
-  { date: '19/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
-  { date: '20/12', morning: 'عباسی', evening: 'احمدی', night: '' },
-  { date: '21/12', morning: 'آرزویی', evening: 'عباسی', night: 'امین دزفولی' },
-  { date: '22/12', morning: 'احمدی', evening: 'احمدی', night: '' },
-  { date: '23/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
-  { date: '24/12', morning: '', evening: 'حسن نژاد', night: 'حسن نژاد' },
-  { date: '25/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
-  { date: '26/12', morning: '', evening: 'قلاوند', night: 'قلاوند' },
-  { date: '27/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
-  { date: '28/12', morning: 'آرزویی', evening: 'شمی پور', night: '' },
-  { date: '29/12', morning: 'امین دزفولی', evening: 'امین دزفولی', night: '' }
+  { date: '1', morning: 'علی مرادی', evening: 'علی مرادی', night: '' },
+  { date: '2', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '3', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
+  { date: '4', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '5', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
+  { date: '6', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '7', morning: 'آرزویی', evening: 'حسن نژاد', night: 'حسن نژاد' },
+  { date: '8', morning: 'علی مرادی', evening: 'حسن نژاد', night: 'حسن نژاد' },
+  { date: '9', morning: '', evening: 'عباسی', night: 'آرزویی' },
+  { date: '10', morning: '', evening: 'شمی پور', night: 'شمی پور' },
+  { date: '11', morning: '', evening: 'قلاوند', night: 'قلاوند' },
+  { date: '12', morning: '', evening: 'مظفری', night: 'مظفری' },
+  { date: '13', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
+  { date: '14', morning: 'آرزویی', evening: 'مظفری', night: 'مظفری' },
+  { date: '15', morning: 'براتی', evening: 'براتی', night: '' },
+  { date: '16', morning: '', evening: 'آرزویی', night: 'آرزویی' },
+  { date: '17', morning: 'آرزویی', evening: 'معصومی', night: 'معصومی' },
+  { date: '18', morning: '', evening: '', night: 'امین دزفولی' },
+  { date: '19', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '20', morning: 'عباسی', evening: 'احمدی', night: '' },
+  { date: '21', morning: 'آرزویی', evening: 'عباسی', night: 'امین دزفولی' },
+  { date: '22', morning: 'احمدی', evening: 'احمدی', night: '' },
+  { date: '23', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '24', morning: '', evening: 'حسن نژاد', night: 'حسن نژاد' },
+  { date: '25', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '26', morning: '', evening: 'قلاوند', night: 'قلاوند' },
+  { date: '27', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '28', morning: 'آرزویی', evening: 'شمی پور', night: '' },
+  { date: '29', morning: 'امین دزفولی', evening: 'امین دزفولی', night: '' }
 ];
 
+// ==========================================
+// 2. SVG ICONS (Native & Lightweight)
+// ==========================================
+const SvgIcon = ({ d, color = "currentColor", size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+
+const Icons = {
+  Doctor: () => <SvgIcon d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M22 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75" />,
+  Calendar: () => <SvgIcon d="M3 4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4z M16 2v4 M8 2v4 M3 10h18" />,
+  Hospital: () => <SvgIcon d="M12 6v4 M14 14h-4 M14 18h-4 M14 8h-4 M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2 M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18" />,
+  Sun: () => <SvgIcon d="M12 2v2 M12 20v2 M4.93 4.93l1.41 1.41 M17.66 17.66l1.41 1.41 M2 12h2 M20 12h2 M6.34 17.66l-1.41 1.41 M19.07 4.93l-1.41 1.41 M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" color="#f59e0b" />,
+  Sunset: () => <SvgIcon d="M12 10V2 M4.93 10.93l1.41 1.41 M2 18h2 M20 18h2 M19.07 10.93l-1.41 1.41 M22 22H2 M16 6l-4-4-4 4 M16 18a4 4 0 0 0-8 0" color="#8b5cf6" />,
+  Moon: () => <SvgIcon d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" color="#3b82f6" />,
+  Print: () => <SvgIcon d="M6 9V2h12v7 M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2 M6 14h12v8H6z" />
+};
+
+// ==========================================
+// 3. BULLETPROOF CSS INJECTION
+// ==========================================
+const MEDICAL_STYLES = `
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css');
+
+:root {
+  --primary: #0f766e;
+  --primary-light: #ccfbf1;
+  --bg-color: #f1f5f9;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --radius: 16px;
+  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Vazirmatn', Tahoma, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  direction: rtl;
+  line-height: 1.6;
+}
+
+.mc-layout {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+/* --- Top Navigation --- */
+.mc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-bg);
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+  border-right: 6px solid var(--primary);
+}
+.mc-header-titles h1 { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
+.mc-header-titles p { font-size: 1rem; color: var(--text-muted); font-weight: 500; }
+.mc-print-btn {
+  display: flex; gap: 8px; align-items: center;
+  background: var(--primary-light); color: var(--primary);
+  border: none; padding: 10px 16px; border-radius: 8px;
+  font-weight: 700; cursor: pointer; transition: 0.2s;
+}
+.mc-print-btn:hover { background: var(--primary); color: white; }
+
+/* --- Segmented Controls (Tabs) --- */
+.mc-tabs {
+  display: flex; gap: 10px; background: var(--card-bg);
+  padding: 8px; border-radius: 12px; margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+.mc-tab {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 20px; border: none; background: transparent;
+  color: var(--text-muted); font-size: 1.1rem; font-weight: 700;
+  border-radius: 8px; cursor: pointer; transition: 0.3s all;
+}
+.mc-tab:hover { background: var(--bg-color); }
+.mc-tab.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3); }
+
+/* --- Summary Cards --- */
+.mc-stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem; margin-bottom: 2.5rem;
+}
+.mc-stat-card {
+  background: var(--card-bg); padding: 1.25rem;
+  border-radius: 12px; box-shadow: var(--shadow);
+  display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid var(--border-color); transition: 0.3s transform;
+}
+.mc-stat-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+.mc-stat-info { display: flex; align-items: center; gap: 12px; }
+.mc-stat-avatar {
+  background: var(--primary-light); color: var(--primary);
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.mc-stat-name { font-weight: 800; font-size: 1.05rem; }
+.mc-stat-value {
+  background: var(--bg-color); padding: 6px 12px;
+  border-radius: 6px; font-weight: 900; font-size: 1.2rem; color: var(--primary);
+}
+
+/* --- Medical Data Table --- */
+.mc-table-wrapper {
+  background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.mc-table-header {
+  padding: 1.5rem; background: #f8fafc; border-bottom: 1px solid var(--border-color);
+  display: flex; align-items: center; gap: 10px; font-weight: 900; color: #334155; font-size: 1.2rem;
+}
+.mc-table { width: 100%; border-collapse: collapse; text-align: right; }
+.mc-table th {
+  padding: 1.25rem 1.5rem; font-weight: 800; color: var(--text-muted);
+  border-bottom: 2px solid var(--border-color); background: white;
+}
+.mc-table td {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color);
+  font-weight: 700; color: #1e293b; transition: 0.2s;
+}
+.mc-table tr:hover td { background-color: var(--primary-light); }
+
+/* Custom elements inside table */
+.mc-day-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--primary); color: white;
+  width: 32px; height: 32px; border-radius: 8px; margin-left: 10px; font-size: 1.1rem;
+}
+.mc-empty { color: #cbd5e1; font-weight: 400; }
+.shift-header { display: flex; align-items: center; gap: 6px; }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .mc-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .mc-tabs { flex-direction: column; }
+  .mc-table th, .mc-table td { padding: 1rem; font-size: 0.95rem; }
+}
+
+/* --- Print Styles --- */
+@media print {
+  body { background: white; }
+  .mc-layout { margin: 0; padding: 0; max-width: 100%; }
+  .mc-tabs, .mc-print-btn, .mc-stats-grid { display: none !important; }
+  .mc-header { box-shadow: none; border: 1px solid black; margin-bottom: 1rem; }
+  .mc-table-wrapper { box-shadow: none; border: 1px solid black; }
+  .mc-table th, .mc-table td { border-bottom: 1px solid black; }
+  .mc-day-pill { background: transparent; color: black; border: 1px solid black; }
+}
+`;
+
+// ==========================================
+// 4. MAIN APP COMPONENT
+// ==========================================
 export default function App() {
   const [activeTab, setActiveTab] = useState('infectious');
 
-  // --- Statistics Calculation ---
-  const calculateSingleStats = (data) => {
+  // --- Logic for counting shifts ---
+  const calculateStats = (data, isShafa = false) => {
     const stats = {};
-    data.forEach(item => {
-      if (item.doctor) {
-        stats[item.doctor] = (stats[item.doctor] || 0) + 1;
-      }
-    });
-    return Object.entries(stats).sort((a, b) => b[1] - a[1]);
-  };
-
-  const calculateMultiStats = (data) => {
-    const stats = {};
-    data.forEach(item => {
-      ['morning', 'evening', 'night'].forEach(shift => {
-        const doc = item[shift];
-        if (doc && doc.trim() !== '' && doc !== '---') {
-          stats[doc] = (stats[doc] || 0) + 1;
+    if (!isShafa) {
+      data.forEach(item => {
+        if (item.doctor && item.doctor !== '---') {
+          stats[item.doctor] = (stats[item.doctor] || 0) + 1;
         }
       });
-    });
+    } else {
+      data.forEach(item => {
+        ['morning', 'evening', 'night'].forEach(shift => {
+          const doc = item[shift];
+          if (doc && doc.trim() !== '' && doc !== '---') {
+            stats[doc] = (stats[doc] || 0) + 1;
+          }
+        });
+      });
+    }
     return Object.entries(stats).sort((a, b) => b[1] - a[1]);
   };
 
-  const infectiousStats = useMemo(() => calculateSingleStats(infectiousData), []);
-  const internalStats = useMemo(() => calculateSingleStats(internalData), []);
-  const shafaStats = useMemo(() => calculateMultiStats(shafaData), []);
+  const currentData = useMemo(() => {
+    if (activeTab === 'infectious') return infectiousData;
+    if (activeTab === 'internal') return internalData;
+    return shafaData;
+  }, [activeTab]);
 
-  // --- Components with Pure ClassNames ---
-  const StatCard = ({ doctor, count, theme }) => (
-    <div className={`stat-card theme-${theme}`}>
-      <div className="stat-left">
-        <div className="stat-icon-wrap">
-          <UserIcon size={20} />
-        </div>
-        <span className="stat-name">{doctor}</span>
-      </div>
-      <div className="stat-right">
-        <span className="stat-count">{count}</span>
-        <span className="stat-label">شیفت</span>
-      </div>
-    </div>
-  );
+  const currentStats = useMemo(() => calculateStats(currentData, activeTab === 'shafa'), [currentData, activeTab]);
 
-  const StatsGrid = ({ stats, theme }) => (
-    <div className={`stats-section theme-${theme}`}>
-      <div className="stats-title">
-        <ActivityIcon size={24} />
-        <h2>آمار کلی شیفت‌ها (اسفند ۱۴۰۴)</h2>
-      </div>
-      <div className="stats-grid">
-        {stats.map(([doctor, count], idx) => (
-          <StatCard key={idx} doctor={doctor} count={count} theme={theme} />
-        ))}
-      </div>
-    </div>
-  );
-
-  const SingleColumnTable = ({ data, title, theme }) => (
-    <div className={`table-container theme-${theme}`}>
-      <div className="table-header">
-        <CalendarIcon size={22} />
-        <h3>{title}</h3>
-      </div>
-      <div className="table-responsive">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th style={{ width: '35%' }}>تاریخ</th>
-              <th>نام پزشک کشیک</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, idx) => (
-              <tr key={idx}>
-                <td>
-                  <div className="date-cell">
-                    <div className="date-badge">{row.date.split('/')[0]}</div>
-                    <span>اسفند</span>
-                  </div>
-                </td>
-                <td>{row.doctor}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-
-  const MultiColumnTable = ({ data, title, theme }) => (
-    <div className={`table-container theme-${theme}`}>
-      <div className="table-header">
-        <HospitalIcon size={22} />
-        <h3>{title}</h3>
-      </div>
-      <div className="table-responsive">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th style={{ width: '25%' }}>تاریخ</th>
-              <th className="th-morning"><SunIcon size={18}/> صبح</th>
-              <th className="th-evening"><SunsetIcon size={18}/> عصر</th>
-              <th className="th-night"><MoonIcon size={18}/> شب</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, idx) => (
-              <tr key={idx}>
-                <td>
-                  <div className="date-cell">
-                    <div className="date-badge">{row.date.split('/')[0]}</div>
-                    <span>اسفند</span>
-                  </div>
-                </td>
-                <td>{row.morning ? <span className="filled-cell">{row.morning}</span> : <span className="empty-cell">--</span>}</td>
-                <td>{row.evening ? <span className="filled-cell">{row.evening}</span> : <span className="empty-cell">--</span>}</td>
-                <td>{row.night ? <span className="filled-cell">{row.night}</span> : <span className="empty-cell">--</span>}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+  const getTitle = () => {
+    if (activeTab === 'infectious') return 'برنامه روزانه بخش عفونی (گلستان)';
+    if (activeTab === 'internal') return 'برنامه روزانه بخش داخلی (گلستان)';
+    return 'برنامه روزانه بیمارستان شفا';
+  };
 
   return (
-    <div className="app-wrapper">
-      
-      {/* 100% VANILLA CSS - NO TAILWIND REQUIRED */}
-      <style>{`
-        @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css');
-        
-        * { box-sizing: border-box; }
-        
-        .app-wrapper {
-          min-height: 100vh;
-          background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-          padding: 2rem 1rem;
-          color: #1e293b;
-          direction: rtl;
-          font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
-          line-height: 1.5;
-        }
-        
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-        
-        /* Header Styles */
-        .app-header {
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(12px);
-          padding: 1.5rem 2rem;
-          border-radius: 1.5rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1.5rem;
-          margin-bottom: 2rem;
-          border: 1px solid white;
-        }
-        
-        .header-left { display: flex; align-items: center; gap: 1.25rem; }
-        .header-icon {
-          background: linear-gradient(135deg, #2563eb, #6366f1);
-          color: white;
-          padding: 1rem;
-          border-radius: 1.25rem;
-          box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-        }
-        .header-title { font-size: 1.75rem; font-weight: 900; margin: 0 0 0.25rem 0; color: #0f172a; letter-spacing: -0.025em; }
-        .header-subtitle { font-size: 1rem; color: #64748b; margin: 0; font-weight: 600; }
-        
-        .header-badge {
-          display: flex; align-items: center; gap: 0.5rem;
-          background: #eef2ff; color: #4338ca;
-          padding: 0.6rem 1.25rem; border-radius: 1rem;
-          font-weight: 800; font-size: 0.9rem;
-          border: 1px solid #e0e7ff;
-        }
+    <>
+      {/* This is the magic bullet. It injects RAW CSS directly into the DOM.
+        Vercel/Next.js CANNOT strip this out during build. It guarantees the styling.
+      */}
+      <style dangerouslySetInnerHTML={{ __html: MEDICAL_STYLES }} />
 
-        /* Tabs Styles */
-        .tabs {
-          display: flex; flex-wrap: wrap; gap: 0.5rem;
-          background: rgba(255, 255, 255, 0.7);
-          backdrop-filter: blur(8px);
-          padding: 0.5rem; border-radius: 1.25rem;
-          margin-bottom: 2.5rem;
-          border: 1px solid #f1f5f9;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
+      <div className="mc-layout">
         
-        .tab-btn {
-          flex: 1; min-width: 200px;
-          display: flex; justify-content: center; align-items: center; gap: 0.6rem;
-          padding: 1rem; border-radius: 1rem;
-          font-weight: 800; font-size: 1.05rem;
-          border: none; cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          background: transparent; color: #64748b; font-family: inherit;
-        }
-        
-        .tab-btn:hover:not(.active) { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #0f172a; }
-        
-        .tab-btn.active.infectious { background: linear-gradient(135deg, #10b981, #14b8a6); color: white; transform: scale(1.02); box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); }
-        .tab-btn.active.internal { background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; transform: scale(1.02); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); }
-        .tab-btn.active.shafa { background: linear-gradient(135deg, #a855f7, #d946ef); color: white; transform: scale(1.02); box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.3); }
-
-        /* Stats Styles */
-        .stats-section { margin-bottom: 2.5rem; animation: fadeIn 0.5s ease; }
-        .stats-title { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem; }
-        .stats-title h2 { font-size: 1.25rem; font-weight: 900; color: #1e293b; margin: 0; letter-spacing: -0.025em; }
-        
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-          gap: 1.25rem;
-        }
-        
-        .stat-card {
-          display: flex; justify-content: space-between; align-items: center;
-          padding: 1.25rem; background: white;
-          border-radius: 1.25rem;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-          border: 1px solid #f1f5f9;
-          transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px -5px rgba(0,0,0,0.08); border-color: white; }
-        
-        .stat-left { display: flex; align-items: center; gap: 1rem; }
-        .stat-icon-wrap { padding: 0.75rem; border-radius: 1rem; display: flex; align-items: center; justify-content: center; }
-        .stat-name { font-weight: 900; font-size: 1.1rem; color: #334155; }
-        
-        .stat-right {
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-          background: #f8fafc; padding: 0.5rem 0.8rem;
-          border-radius: 0.8rem; border: 1px solid #f1f5f9;
-        }
-        .stat-count { font-size: 1.5rem; font-weight: 900; line-height: 1; margin-bottom: 0.25rem; }
-        .stat-label { font-size: 0.7rem; font-weight: 800; color: #64748b; }
-
-        /* Table Styles */
-        .table-container {
-          background: white; border-radius: 1.5rem;
-          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-          border: 1px solid #f1f5f9; overflow: hidden;
-          animation: fadeIn 0.5s ease;
-        }
-        
-        .table-header {
-          padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 0.75rem;
-          border-bottom: 1px solid #f1f5f9;
-        }
-        .table-header h3 { margin: 0; font-size: 1.2rem; font-weight: 900; color: #1e293b; }
-        
-        .table-responsive { overflow-x: auto; }
-        .data-table { width: 100%; border-collapse: collapse; text-align: right; }
-        
-        .data-table th {
-          padding: 1.25rem 1.5rem; background: rgba(248, 250, 252, 0.7);
-          font-weight: 800; color: #64748b; border-bottom: 1px solid #e2e8f0; font-size: 0.95rem;
-        }
-        
-        .data-table td {
-          padding: 1rem 1.5rem; border-bottom: 1px solid #f8fafc;
-          font-weight: 800; color: #334155; font-size: 1.05rem;
-          transition: background 0.2s;
-        }
-        
-        .data-table tbody tr:hover td { background: #f8fafc; }
-        
-        .date-cell { display: flex; align-items: center; gap: 0.75rem; color: #64748b; font-size: 0.95rem; }
-        .date-badge {
-          display: flex; justify-content: center; align-items: center;
-          width: 2.75rem; height: 2.75rem; border-radius: 0.8rem;
-          font-weight: 900; font-size: 1.1rem; transition: transform 0.3s;
-        }
-        .data-table tbody tr:hover .date-badge { transform: scale(1.1); }
-        
-        .empty-cell { color: #cbd5e1; font-weight: normal; }
-        .filled-cell { color: #1e293b; }
-
-        /* Column Specific Colors */
-        .th-morning { color: #ea580c !important; display: flex; align-items: center; gap: 0.4rem; }
-        .th-evening { color: #9333ea !important; display: flex; align-items: center; gap: 0.4rem; }
-        .th-night { color: #4f46e5 !important; display: flex; align-items: center; gap: 0.4rem; }
-
-        /* THEMES */
-        /* Infectious Theme */
-        .theme-infectious .stat-icon-wrap { background: #ecfdf5; color: #059669; }
-        .theme-infectious .stat-count { color: #059669; }
-        .theme-infectious .table-header { background: rgba(236, 253, 245, 0.4); }
-        .theme-infectious .table-header svg { color: #059669; }
-        .theme-infectious .date-badge { background: #ecfdf5; color: #047857; }
-        .theme-infectious .stats-title svg { color: #059669; }
-
-        /* Internal Theme */
-        .theme-internal .stat-icon-wrap { background: #eff6ff; color: #2563eb; }
-        .theme-internal .stat-count { color: #2563eb; }
-        .theme-internal .table-header { background: rgba(239, 246, 255, 0.4); }
-        .theme-internal .table-header svg { color: #2563eb; }
-        .theme-internal .date-badge { background: #eff6ff; color: #1d4ed8; }
-        .theme-internal .stats-title svg { color: #2563eb; }
-
-        /* Shafa Theme */
-        .theme-shafa .stat-icon-wrap { background: #faf5ff; color: #9333ea; }
-        .theme-shafa .stat-count { color: #9333ea; }
-        .theme-shafa .table-header { background: rgba(250, 245, 255, 0.4); }
-        .theme-shafa .table-header svg { color: #9333ea; }
-        .theme-shafa .date-badge { background: #faf5ff; color: #7e22ce; }
-        .theme-shafa .stats-title svg { color: #9333ea; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        @media (max-width: 768px) {
-          .app-header { flex-direction: column; align-items: flex-start; }
-          .header-left { width: 100%; }
-        }
-      `}</style>
-
-      <div className="container">
-        
-        {/* Header */}
-        <header className="app-header">
-          <div className="header-left">
-            <div className="header-icon">
-              <CalendarIcon size={36} strokeWidth={2} />
-            </div>
-            <div>
-              <h1 className="header-title">برنامه کشیک پزشکان</h1>
-              <p className="header-subtitle">اسفند ماه ۱۴۰۴ - بیمارستان‌های گلستان و شفا</p>
-            </div>
+        {/* Header Section */}
+        <header className="mc-header">
+          <div className="mc-header-titles">
+            <h1>سیستم مدیریت کشیک پزشکان</h1>
+            <p>برنامه زمانی اسفند ۱۴۰۴ - نسخه نهایی</p>
           </div>
-          <div className="header-badge">
-            <UsersIcon size={20} />
-            <span>گزارش جامع شیفت‌ها</span>
-          </div>
+          <button className="mc-print-btn" onClick={() => window.print()}>
+            <Icons.Print />
+            چاپ برنامه
+          </button>
         </header>
 
-        {/* Tabs */}
-        <div className="tabs">
-          <button
+        {/* Segmented Controls */}
+        <nav className="mc-tabs">
+          <button 
+            className={`mc-tab ${activeTab === 'infectious' ? 'active' : ''}`}
             onClick={() => setActiveTab('infectious')}
-            className={`tab-btn infectious ${activeTab === 'infectious' ? 'active' : ''}`}
           >
-            <ActivityIcon size={22} />
-            بخش عفونی - گلستان
+            <Icons.Hospital />
+            عفونی - گلستان
           </button>
-          <button
+          <button 
+            className={`mc-tab ${activeTab === 'internal' ? 'active' : ''}`}
             onClick={() => setActiveTab('internal')}
-            className={`tab-btn internal ${activeTab === 'internal' ? 'active' : ''}`}
           >
-            <UserIcon size={22} />
-            بخش داخلی - گلستان
+            <Icons.Doctor />
+            داخلی - گلستان
           </button>
-          <button
+          <button 
+            className={`mc-tab ${activeTab === 'shafa' ? 'active' : ''}`}
             onClick={() => setActiveTab('shafa')}
-            className={`tab-btn shafa ${activeTab === 'shafa' ? 'active' : ''}`}
           >
-            <HospitalIcon size={22} />
+            <Icons.Calendar />
             بیمارستان شفا
           </button>
+        </nav>
+
+        {/* Statistics Board */}
+        <div className="mc-stats-grid">
+          {currentStats.map(([doctor, count], index) => (
+            <div className="mc-stat-card" key={index}>
+              <div className="mc-stat-info">
+                <div className="mc-stat-avatar"><Icons.Doctor /></div>
+                <span className="mc-stat-name">{doctor}</span>
+              </div>
+              <div className="mc-stat-value">{count}</div>
+            </div>
+          ))}
         </div>
 
-        {/* Tab Content */}
-        <div>
-          {activeTab === 'infectious' && (
-            <div>
-              <StatsGrid stats={infectiousStats} theme="infectious" />
-              <SingleColumnTable data={infectiousData} title="لیست کشیک روزانه بخش عفونی" theme="infectious" />
-            </div>
-          )}
-
-          {activeTab === 'internal' && (
-            <div>
-              <StatsGrid stats={internalStats} theme="internal" />
-              <SingleColumnTable data={internalData} title="لیست کشیک روزانه بخش داخلی" theme="internal" />
-            </div>
-          )}
-
-          {activeTab === 'shafa' && (
-            <div>
-              <StatsGrid stats={shafaStats} theme="shafa" />
-              <MultiColumnTable data={shafaData} title="لیست کشیک بیمارستان شفا (صبح، عصر، شب)" theme="shafa" />
-            </div>
-          )}
+        {/* Data Table */}
+        <div className="mc-table-wrapper">
+          <div className="mc-table-header">
+            <Icons.Calendar />
+            <span>{getTitle()}</span>
+          </div>
+          
+          <table className="mc-table">
+            <thead>
+              {activeTab === 'shafa' ? (
+                <tr>
+                  <th style={{ width: '20%' }}>تاریخ (اسفند)</th>
+                  <th style={{ width: '26%' }}><div className="shift-header"><Icons.Sun /> شیفت صبح</div></th>
+                  <th style={{ width: '26%' }}><div className="shift-header"><Icons.Sunset /> شیفت عصر</div></th>
+                  <th style={{ width: '26%' }}><div className="shift-header"><Icons.Moon /> شیفت شب</div></th>
+                </tr>
+              ) : (
+                <tr>
+                  <th style={{ width: '30%' }}>تاریخ (اسفند)</th>
+                  <th>نام پزشک رجیستر</th>
+                </tr>
+              )}
+            </thead>
+            <tbody>
+              {currentData.map((row, idx) => (
+                <tr key={idx}>
+                  <td>
+                    <div className="mc-day-pill">{row.date}</div>
+                  </td>
+                  
+                  {activeTab === 'shafa' ? (
+                    <>
+                      <td>{row.morning ? row.morning : <span className="mc-empty">ندارد</span>}</td>
+                      <td>{row.evening ? row.evening : <span className="mc-empty">ندارد</span>}</td>
+                      <td>{row.night ? row.night : <span className="mc-empty">ندارد</span>}</td>
+                    </>
+                  ) : (
+                    <td>{row.doctor}</td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
       </div>
-    </div>
+    </>
   );
 }
