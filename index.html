@@ -1,354 +1,318 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لیست اقدامات اجرایی - رویال پارس</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn-font@v33.003/dist/font-face.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+import React, { useState, useMemo } from 'react';
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Vazirmatn', 'sans-serif'],
-                    },
-                    colors: {
-                        royal: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            500: '#14b8a6', // Teal primary
-                            800: '#115e59',
-                            900: '#0f172a', // Dark background
-                        },
-                        gold: {
-                            500: '#d97706',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+// --- Custom SVG Icons (No external dependencies required) ---
+const IconBase = ({ children, size = 24, className = "", strokeWidth = 2 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+    {children}
+  </svg>
+);
 
-    <style>
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #f8fafc; /* Light gray for web */
-        }
-        
-        /* استایل‌های چک‌باکس */
-        .custom-checkbox input:checked + div {
-            background-color: #14b8a6;
-            border-color: #14b8a6;
-        }
-        .custom-checkbox input:checked + div svg {
-            display: block;
-        }
-        
-        /* تنظیمات مخصوص پرینت */
-        @media print {
-            @page {
-                size: A4;
-                margin: 1.5cm;
-            }
-            body {
-                background-color: white;
-                color: black;
-            }
-            .no-print {
-                display: none !important;
-            }
-            .print-break-inside {
-                break-inside: avoid;
-            }
-            .page-break {
-                page-break-before: always;
-            }
-            .shadow-lg, .shadow-xl {
-                box-shadow: none !important;
-            }
-            .bg-white {
-                background-color: transparent !important;
-            }
-            .text-royal-800 {
-                color: black !important;
-            }
-            /* حذف رنگ‌های پس‌زمینه برای صرفه‌جویی در جوهر */
-            .bg-royal-50, .bg-blue-50 {
-                background-color: #f3f3f3 !important;
-                -webkit-print-color-adjust: exact;
-            }
-            border {
-                border-color: #000 !important;
-            }
-        }
-    </style>
-</head>
-<body class="min-h-screen p-6 md:p-12 text-slate-800">
+const CalendarIcon = (props) => <IconBase {...props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></IconBase>;
+const UserIcon = (props) => <IconBase {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
+const HospitalIcon = (props) => <IconBase {...props}><path d="M12 6v4"/><path d="M14 14h-4"/><path d="M14 18h-4"/><path d="M14 8h-4"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2"/><path d="M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18"/></IconBase>;
+const ActivityIcon = (props) => <IconBase {...props}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></IconBase>;
+const SunIcon = (props) => <IconBase {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></IconBase>;
+const SunsetIcon = (props) => <IconBase {...props}><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="M16 6l-4-4-4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></IconBase>;
+const MoonIcon = (props) => <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></IconBase>;
+const UsersIcon = (props) => <IconBase {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconBase>;
 
-    <!-- دکمه شناور پرینت (در چاپ دیده نمی‌شود) -->
-    <div class="fixed bottom-8 left-8 no-print z-50">
-        <button onclick="window.print()" class="bg-royal-800 hover:bg-royal-900 text-white font-bold py-4 px-6 rounded-full shadow-xl flex items-center gap-3 transition-all transform hover:scale-105">
-            <i class="fa-solid fa-print text-xl"></i>
-            <span>چاپ لیست</span>
-        </button>
+// --- Data Preparation ---
+const infectiousData = [
+  { date: '1/12', doctor: 'دارابی' }, { date: '2/12', doctor: 'پوراحسانی' },
+  { date: '3/12', doctor: 'پوراحسانی' }, { date: '4/12', doctor: 'آرزویی' },
+  { date: '5/12', doctor: 'آرزویی' }, { date: '6/12', doctor: 'پوراحسانی' },
+  { date: '7/12', doctor: 'شمی پور' }, { date: '8/12', doctor: 'شمی پور' },
+  { date: '9/12', doctor: 'پوراحسانی' }, { date: '10/12', doctor: 'پوراحسانی' },
+  { date: '11/12', doctor: 'دارابی' }, { date: '12/12', doctor: 'دارابی' },
+  { date: '13/12', doctor: 'دارابی' }, { date: '14/12', doctor: 'رضوی' },
+  { date: '15/12', doctor: 'دارابی' }, { date: '16/12', doctor: 'دارابی' },
+  { date: '17/12', doctor: 'پوراحسانی' }, { date: '18/12', doctor: 'آرزویی' },
+  { date: '19/12', doctor: 'آرزویی' }, { date: '20/12', doctor: 'پوراحسانی' },
+  { date: '21/12', doctor: 'معارفی' }, { date: '22/12', doctor: 'معارفی' },
+  { date: '23/12', doctor: 'پوراحسانی' }, { date: '24/12', doctor: 'پوراحسانی' },
+  { date: '25/12', doctor: 'آرزویی' }, { date: '26/12', doctor: 'آرزویی' },
+  { date: '27/12', doctor: 'پوراحسانی' }, { date: '28/12', doctor: 'معارفی' },
+  { date: '29/12', doctor: 'شمی پور' }
+];
+
+const internalData = [
+  { date: '1/12', doctor: 'معارفی' }, { date: '2/12', doctor: 'حسن نژاد' },
+  { date: '3/12', doctor: 'معارفی' }, { date: '4/12', doctor: 'شمی پور' },
+  { date: '5/12', doctor: 'قلاوند' }, { date: '6/12', doctor: 'مظفری' },
+  { date: '7/12', doctor: 'شمی پور' }, { date: '8/12', doctor: 'شمی پور' },
+  { date: '9/12', doctor: 'مظفری' }, { date: '10/12', doctor: 'معارفی' },
+  { date: '11/12', doctor: 'حسن نژاد' }, { date: '12/12', doctor: 'معارفی' },
+  { date: '13/12', doctor: 'پورکاوه' }, { date: '14/12', doctor: 'شمی پور' },
+  { date: '15/12', doctor: 'پورکاوه' }, { date: '16/12', doctor: 'شمی پور' },
+  { date: '17/12', doctor: 'پورکاوه' }, { date: '18/12', doctor: 'قلاوند' },
+  { date: '19/12', doctor: 'حسن نژاد' }, { date: '20/12', doctor: 'پورکاوه' },
+  { date: '21/12', doctor: 'معارفی' }, { date: '22/12', doctor: 'معارفی' },
+  { date: '23/12', doctor: 'شمی پور' }, { date: '24/12', doctor: 'حسن نژاد' },
+  { date: '25/12', doctor: 'معارفی' }, { date: '26/12', doctor: 'معارفی' },
+  { date: '27/12', doctor: 'شمی پور' }, { date: '28/12', doctor: 'معارفی' },
+  { date: '29/12', doctor: 'شمی پور' }
+];
+
+const shafaData = [
+  { date: '1/12', morning: 'علی مرادی', evening: 'علی مرادی', night: '' },
+  { date: '2/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '3/12', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
+  { date: '4/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '5/12', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
+  { date: '6/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '7/12', morning: 'آرزویی', evening: 'حسن نژاد', night: 'حسن نژاد' },
+  { date: '8/12', morning: 'علی مرادی', evening: 'حسن نژاد', night: 'حسن نژاد' },
+  { date: '9/12', morning: '', evening: 'عباسی', night: 'آرزویی' },
+  { date: '10/12', morning: '', evening: 'شمی پور', night: 'شمی پور' },
+  { date: '11/12', morning: '', evening: 'قلاوند', night: 'قلاوند' },
+  { date: '12/12', morning: '', evening: 'مظفری', night: 'مظفری' },
+  { date: '13/12', morning: '', evening: 'بالی زاده', night: 'بالی زاده' },
+  { date: '14/12', morning: 'آرزویی', evening: 'مظفری', night: 'مظفری' },
+  { date: '15/12', morning: 'براتی', evening: 'براتی', night: '' },
+  { date: '16/12', morning: '', evening: 'آرزویی', night: 'آرزویی' },
+  { date: '17/12', morning: 'آرزویی', evening: 'معصومی', night: 'معصومی' },
+  { date: '18/12', morning: '', evening: '', night: 'امین دزفولی' },
+  { date: '19/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '20/12', morning: 'عباسی', evening: 'احمدی', night: '' },
+  { date: '21/12', morning: 'آرزویی', evening: 'عباسی', night: 'امین دزفولی' },
+  { date: '22/12', morning: 'احمدی', evening: 'احمدی', night: '' },
+  { date: '23/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '24/12', morning: '', evening: 'حسن نژاد', night: 'حسن نژاد' },
+  { date: '25/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '26/12', morning: '', evening: 'قلاوند', night: 'قلاوند' },
+  { date: '27/12', morning: '', evening: 'احمدی', night: 'امین دزفولی' },
+  { date: '28/12', morning: 'آرزویی', evening: 'شمی پور', night: '' },
+  { date: '29/12', morning: 'امین دزفولی', evening: 'امین دزفولی', night: '' }
+];
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('infectious');
+
+  // --- سیستم اجرای اجباری گرافیک برای سرورهایی مثل Vercel ---
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && !document.getElementById('tailwind-cdn')) {
+      const script = document.createElement('script');
+      script.id = 'tailwind-cdn';
+      script.src = 'https://cdn.tailwindcss.com';
+      document.head.appendChild(script);
+    }
+  }, []);
+
+  // --- Statistics Calculation ---
+  const calculateSingleStats = (data) => {
+    const stats = {};
+    data.forEach(item => {
+      if (item.doctor) {
+        stats[item.doctor] = (stats[item.doctor] || 0) + 1;
+      }
+    });
+    return Object.entries(stats).sort((a, b) => b[1] - a[1]);
+  };
+
+  const calculateMultiStats = (data) => {
+    const stats = {};
+    data.forEach(item => {
+      ['morning', 'evening', 'night'].forEach(shift => {
+        const doc = item[shift];
+        if (doc && doc.trim() !== '' && doc !== '---') {
+          stats[doc] = (stats[doc] || 0) + 1;
+        }
+      });
+    });
+    return Object.entries(stats).sort((a, b) => b[1] - a[1]);
+  };
+
+  const infectiousStats = useMemo(() => calculateSingleStats(infectiousData), []);
+  const internalStats = useMemo(() => calculateSingleStats(internalData), []);
+  const shafaStats = useMemo(() => calculateMultiStats(shafaData), []);
+
+  // --- Components ---
+  const StatCard = ({ doctor, count, colorClass }) => (
+    <div className={`flex items-center justify-between p-4 rounded-2xl shadow-sm border border-slate-100 bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300`}>
+      <div className="flex items-center gap-3">
+        <div className={`p-2.5 rounded-xl ${colorClass.replace('border-', 'bg-').replace('300', '50')} border border-slate-50`}>
+          <UserIcon size={20} className={colorClass.replace('border-', 'text-').replace('300', '600')} />
+        </div>
+        <span className="font-bold text-slate-700">{doctor}</span>
+      </div>
+      <div className="flex flex-col items-center bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+        <span className={`text-xl font-black ${colorClass.replace('border-', 'text-').replace('300', '600')}`}>{count}</span>
+        <span className="text-[10px] text-slate-500 font-bold">شیفت</span>
+      </div>
     </div>
+  );
 
-    <!-- کانتینر اصلی سند -->
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-none md:rounded-lg overflow-hidden border border-slate-200">
+  const StatsGrid = ({ stats, colorClass }) => (
+    <div className="mb-8">
+      <div className="flex items-center gap-2 mb-4 px-1">
+        <ActivityIcon size={24} className={colorClass.replace('border-', 'text-').replace('300', '600')} />
+        <h2 className="text-xl font-bold text-slate-800 tracking-tight">آمار کلی شیفت‌ها (اسفند ۱۴۰۴)</h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {stats.map(([doctor, count], idx) => (
+          <StatCard key={idx} doctor={doctor} count={count} colorClass={colorClass} />
+        ))}
+      </div>
+    </div>
+  );
+
+  const SingleColumnTable = ({ data, title, colorClass }) => (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className={`p-5 ${colorClass.replace('border-', 'bg-').replace('300', '50/70')} border-b border-slate-100 flex items-center gap-3`}>
+        <CalendarIcon size={22} className={colorClass.replace('border-', 'text-').replace('300', '600')} />
+        <h3 className="font-bold text-slate-800 text-lg">{title}</h3>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-right">
+          <thead>
+            <tr className="bg-slate-50/50 text-slate-500 border-b border-slate-100 text-sm">
+              <th className="p-4 font-bold w-1/3">تاریخ</th>
+              <th className="p-4 font-bold">نام پزشک کشیک</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, idx) => (
+              <tr key={idx} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
+                <td className="p-4 font-medium text-slate-800 flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-xl ${colorClass.replace('border-', 'bg-').replace('300', '50')} flex items-center justify-center text-sm font-bold ${colorClass.replace('border-', 'text-').replace('300', '700')} group-hover:scale-110 transition-transform`}>
+                    {row.date.split('/')[0]}
+                  </div>
+                  <span className="text-slate-500">اسفند</span>
+                </td>
+                <td className="p-4 text-slate-700 font-bold">{row.doctor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  const MultiColumnTable = ({ data, title, colorClass }) => (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className={`p-5 ${colorClass.replace('border-', 'bg-').replace('300', '50/70')} border-b border-slate-100 flex items-center gap-3`}>
+        <HospitalIcon size={22} className={colorClass.replace('border-', 'text-').replace('300', '600')} />
+        <h3 className="font-bold text-slate-800 text-lg">{title}</h3>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-right">
+          <thead>
+            <tr className="bg-slate-50/50 text-slate-500 border-b border-slate-100 text-sm">
+              <th className="p-4 font-bold w-32">تاریخ</th>
+              <th className="p-4 font-bold text-orange-500"><div className="flex items-center gap-1.5"><SunIcon size={18}/> صبح</div></th>
+              <th className="p-4 font-bold text-purple-500"><div className="flex items-center gap-1.5"><SunsetIcon size={18}/> عصر</div></th>
+              <th className="p-4 font-bold text-indigo-500"><div className="flex items-center gap-1.5"><MoonIcon size={18}/> شب</div></th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, idx) => (
+              <tr key={idx} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
+                <td className="p-4 font-medium text-slate-800 flex items-center gap-3">
+                   <div className={`w-9 h-9 rounded-xl ${colorClass.replace('border-', 'bg-').replace('300', '50')} flex items-center justify-center text-sm font-bold ${colorClass.replace('border-', 'text-').replace('300', '700')} group-hover:scale-110 transition-transform`}>
+                    {row.date.split('/')[0]}
+                  </div>
+                  <span className="text-slate-500">اسفند</span>
+                </td>
+                <td className="p-4 font-bold text-slate-700">{row.morning || <span className="text-slate-300 font-normal">--</span>}</td>
+                <td className="p-4 font-bold text-slate-700">{row.evening || <span className="text-slate-300 font-normal">--</span>}</td>
+                <td className="p-4 font-bold text-slate-700">{row.night || <span className="text-slate-300 font-normal">--</span>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  return (
+    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-gray-800 p-4 md:p-8" style={{ fontFamily: '"Vazirmatn", system-ui, sans-serif' }}>
+      
+      {/* Import Vazirmatn Font */}
+      <style>{`
+        @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css');
+      `}</style>
+
+      <div className="max-w-7xl mx-auto">
         
-        <!-- هدر سند -->
-        <header class="bg-royal-900 text-white p-8 border-b-4 border-gold-500 print:bg-white print:text-black print:border-black print:p-0 print:mb-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-bold mb-2">لیست جامع اقدامات اجرایی (Action Plan)</h1>
-                    <p class="text-slate-300 print:text-slate-600 text-sm md:text-base">کمپین نوروز ۱۴۰۵ | مرکز خرید رویال پارس</p>
-                </div>
-                <div class="text-left hidden md:block print:block">
-                    <div class="font-bold text-xl tracking-widest">ROYAL PARS</div>
-                    <div class="text-xs text-slate-400 print:text-black">Marketing Dept.</div>
-                </div>
+        {/* Header */}
+        <header className="mb-8 bg-white/80 backdrop-blur-md p-6 rounded-3xl shadow-sm border border-white flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-5">
+            <div className="bg-gradient-to-tr from-blue-600 to-indigo-500 p-3.5 rounded-2xl text-white shadow-lg shadow-blue-200">
+              <CalendarIcon size={32} strokeWidth={1.5} />
             </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">برنامه کشیک پزشکان</h1>
+              <p className="text-slate-500 font-medium mt-1">اسفند ماه ۱۴۰۴ - بیمارستان‌های گلستان و شفا</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 bg-indigo-50/80 px-4 py-2.5 rounded-xl text-sm font-bold text-indigo-700 border border-indigo-100/50">
+            <UsersIcon size={18} />
+            <span>گزارش جامع شیفت‌ها</span>
+          </div>
         </header>
 
-        <!-- محتوای اصلی -->
-        <div class="p-8 print:p-0">
-
-            <!-- بخش ۱: رسانه و تبلیغات محیطی -->
-            <section class="mb-10 print-break-inside">
-                <div class="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
-                    <span class="bg-royal-800 text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm print:text-black print:border print:border-black print:bg-transparent">۱</span>
-                    <h2 class="text-xl font-bold text-royal-800">مدیریت رسانه‌های محیطی و بصری</h2>
-                </div>
-                
-                <table class="w-full text-sm md:text-base border-collapse">
-                    <thead>
-                        <tr class="bg-slate-100 text-slate-500 text-right print:bg-gray-100">
-                            <th class="p-3 w-12 text-center">#</th>
-                            <th class="p-3">شرح اقدام</th>
-                            <th class="p-3 w-32 hidden md:table-cell print:table-cell">مسئول</th>
-                            <th class="p-3 w-32 hidden md:table-cell print:table-cell">وضعیت</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        <!-- آیتم ۱ -->
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>فراخوان تیزر:</strong> دریافت فایل‌های باکیفیت از برندهای انکر (درسا، بادی‌اسپینر و...)</td>
-                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">تیم محتوا</td>
-                            <td class="p-3 hidden md:table-cell print:table-cell"><span class="border px-2 py-1 rounded text-xs">در دست اقدام</span></td>
-                        </tr>
-                        <!-- آیتم ۲ -->
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>موشن امکانات:</strong> تولید ویدیو معرفی خدمات (پارکینگ، فودکورت) برای نمایشگر همکف</td>
-                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">تیم گرافیک</td>
-                            <td class="p-3 hidden md:table-cell print:table-cell"><span class="border px-2 py-1 rounded text-xs">---</span></td>
-                        </tr>
-                        <!-- آیتم ۳ -->
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>TV Wall بیرونی:</strong> استعلام تعرفه شهرداری و بررسی فنی نمایشگر</td>
-                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">مدیریت اجرایی</td>
-                            <td class="p-3 hidden md:table-cell print:table-cell"><span class="border px-2 py-1 rounded text-xs">---</span></td>
-                        </tr>
-                        <!-- آیتم ۴ -->
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>بیلبوردهای درسا:</strong> نهایی‌سازی قیمت‌گذاری یا تهاتر برای ایام نوروز</td>
-                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">مدیریت</td>
-                            <td class="p-3 hidden md:table-cell print:table-cell"><span class="border px-2 py-1 rounded text-xs">---</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- بخش ۲: دیتابیس و پیامک -->
-            <section class="mb-10 print-break-inside">
-                <div class="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
-                    <span class="bg-royal-800 text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm print:text-black print:border print:border-black print:bg-transparent">۲</span>
-                    <h2 class="text-xl font-bold text-royal-800">بازاریابی داده‌محور و پیامکی</h2>
-                </div>
-                <table class="w-full text-sm md:text-base border-collapse">
-                    <tbody class="divide-y divide-slate-100">
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 w-12 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>تجمیع دیتا:</strong> دریافت فایل اکسل مشتریان از تمام غرفه‌های فعال</td>
-                            <td class="p-3 w-32 text-slate-500 hidden md:table-cell print:table-cell">روابط عمومی</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>بخش‌بندی (Segmentation):</strong> تفکیک لیست به LBS (منطقه‌ای)، مشاغل خاص و VIP</td>
-                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">دیجیتال مارکتینگ</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>استراتژی نرخ تبدیل:</strong> تدوین سناریوی پیامک پلکانی و تست A/B متن‌ها</td>
-                            <td class="p-3 text-slate-500 hidden md:table-cell print:table-cell">دیجیتال مارکتینگ</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- بخش ۳: توسعه تجاری و B2B -->
-            <section class="mb-10 print-break-inside">
-                <div class="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
-                    <span class="bg-royal-800 text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm print:text-black print:border print:border-black print:bg-transparent">۳</span>
-                    <h2 class="text-xl font-bold text-royal-800">توسعه تجاری و قراردادها</h2>
-                </div>
-                <ul class="space-y-3">
-                    <li class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg print:bg-transparent print:border print:border-slate-200">
-                        <input type="checkbox" class="mt-1 w-4 h-4 accent-royal-800">
-                        <div>
-                            <strong class="block text-slate-800">فین‌تک و قراردادهای اعتباری:</strong>
-                            <span class="text-slate-600 text-sm">ایجاد ارتباط و زمینه‌سازی قرارداد با تارا، کارکنان فولاد، نفت، پتروکارت، اسنپ‌پی و سایر موارد مرتبط.</span>
-                        </div>
-                    </li>
-                    <li class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg print:bg-transparent print:border print:border-slate-200">
-                        <input type="checkbox" class="mt-1 w-4 h-4 accent-royal-800">
-                        <div>
-                            <strong class="block text-slate-800">پروموت اختصاصی:</strong>
-                            <span class="text-slate-600 text-sm">برنامه‌ریزی برای فروش سازمانی و کالکشن‌های جدید (به عنوان مثال: پاما، درسا و سایر فروشگاه‌های متقاضی).</span>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-
-            <!-- بخش ۴: کمپین خیریه -->
-            <section class="print-break-inside">
-                <div class="flex items-center gap-3 mb-4 border-b-2 border-slate-200 pb-2">
-                    <span class="bg-royal-800 text-white w-8 h-8 flex items-center justify-center rounded-md font-bold text-sm print:text-black print:border print:border-black print:bg-transparent">۴</span>
-                    <h2 class="text-xl font-bold text-royal-800">مسئولیت اجتماعی و اتمسفر (CSR)</h2>
-                </div>
-                <table class="w-full text-sm md:text-base border-collapse">
-                    <tbody class="divide-y divide-slate-100">
-                        <tr class="hover:bg-slate-50 bg-royal-50 print:bg-transparent">
-                            <td class="p-3 w-12 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>تدوین طرح جامع خیریه:</strong> تدوین دقیق و با جزئیات کامل بخش مالی و اجرایی کمپین خیریه، به همراه توجیه اقتصادی و سیستم ریوارد مارکتینگ (Reward Marketing).</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>مکانیسم اجرایی:</strong> نهایی‌سازی دقیق نحوه توزیع کارت‌ها و محل استقرار صندوق‌ها</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>شفافیت مالی:</strong> آماده‌سازی پیش‌نویس قرارداد با موسسات خیریه</td>
-                        </tr>
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-center"><input type="checkbox" class="w-4 h-4 accent-royal-800"></td>
-                            <td class="p-3"><strong>اتمسفر و دکور:</strong> طراحی فضا و دکوراسیون متناسب با شرایط اجتماعی و وضعیت عمومی جامعه در هفته‌های پایانی اسفند.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <!-- بخش ۵ (جدید): برآورد مالی -->
-            <section class="page-break pt-8 print-break-inside">
-                <div class="flex items-center gap-3 mb-6 border-b-4 border-gold-500 pb-2">
-                    <span class="bg-gold-500 text-white w-10 h-10 flex items-center justify-center rounded-lg font-bold text-lg print:text-black print:border print:border-black print:bg-transparent">۵</span>
-                    <h2 class="text-2xl font-bold text-royal-800">برآورد اولیه هزینه‌های کمپین (تا ۱۵ فروردین)</h2>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm md:text-base border-collapse border border-slate-200">
-                        <thead>
-                            <tr class="bg-royal-800 text-white print:bg-gray-200 print:text-black">
-                                <th class="p-4 border border-slate-300 text-center w-16">ردیف</th>
-                                <th class="p-4 border border-slate-300 text-right">عنوان هزینه</th>
-                                <th class="p-4 border border-slate-300 text-center w-48">برآورد هزینه (تومان)</th>
-                                <th class="p-4 border border-slate-300 text-right">توضیحات</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200">
-                            <tr>
-                                <td class="p-4 border border-slate-200 text-center font-bold">۱</td>
-                                <td class="p-4 border border-slate-200 font-bold">دکور و هزینه های چاپ مربوط به برنامه کمپین فروش نوروز مجموعه - خیریه</td>
-                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۳۰,۰۰۰,۰۰۰ - ۴۰,۰۰۰,۰۰۰</td>
-                                <td class="p-4 border border-slate-200 text-sm">شامل دکور هفت‌سین، باکس‌های همدلی و فضاسازی لابی</td>
-                            </tr>
-                            <tr class="bg-slate-50 print:bg-white">
-                                <td class="p-4 border border-slate-200 text-center font-bold">۲</td>
-                                <td class="p-4 border border-slate-200 font-bold">هزینه چاپ اقلام مصرفی و تبلیغاتی</td>
-                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۱۰,۰۰۰,۰۰۰ - ۱۵,۰۰۰,۰۰۰</td>
-                                <td class="p-4 border border-slate-200 text-sm">شامل گیفت‌کارت‌های ورودی، کارت‌های خیریه و رول‌آپ‌های اطلاع‌رسانی احتمالی</td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 border border-slate-200 text-center font-bold">۳</td>
-                                <td class="p-4 border border-slate-200 font-bold">کمپین پیامکی (SMS Marketing)</td>
-                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۳۰,۰۰۰,۰۰۰ - ۵۰,۰۰۰,۰۰۰</td>
-                                <td class="p-4 border border-slate-200 text-sm">ارسال انبوه منطقه‌ای (LBS) و خوش‌آمدگویی هوشمند</td>
-                            </tr>
-                            <tr class="bg-slate-50 print:bg-white">
-                                <td class="p-4 border border-slate-200 text-center font-bold">۴</td>
-                                <td class="p-4 border border-slate-200 font-bold">شارژ اکانت اسنپ (تسهیلات حمل و نقل)</td>
-                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۳۰,۰۰۰,۰۰۰ - ۵۰,۰۰۰,۰۰۰</td>
-                                <td class="p-4 border border-slate-200 text-sm">کد تخفیف اختصاصی برای سفرهای به مقصد مجتمع</td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 border border-slate-200 text-center font-bold">۵</td>
-                                <td class="p-4 border border-slate-200 font-bold">تیم تولید محتوا و مدیا</td>
-                                <td class="p-4 border border-slate-200 text-center font-mono text-lg">۱۲۰,۰۰۰,۰۰۰</td>
-                                <td class="p-4 border border-slate-200 text-sm">هزینه تیم مستقر برای پوشش کامل بازه ۴۵ روزه کمپین</td>
-                            </tr>
-                            <tr class="bg-yellow-50 print:bg-white">
-                                <td class="p-4 border border-slate-200 text-center font-bold">۶</td>
-                                <td class="p-4 border border-slate-200 font-bold">بودجه کمپین نوروز و مسئولیت اجتماعی</td>
-                                <td class="p-4 border border-slate-200 text-center font-bold text-slate-500">مشروط</td>
-                                <td class="p-4 border border-slate-200 text-sm italic">دقیق‌تر در پروپزال جداگونه با جزئیات کامل ارسال می‌شود.</td>
-                            </tr>
-                            <tr class="bg-yellow-50 print:bg-white">
-                                <td class="p-4 border border-slate-200 text-center font-bold">۷</td>
-                                <td class="p-4 border border-slate-200 font-bold">هزینه بخش مارکتینگ</td>
-                                <td class="p-4 border border-slate-200 text-center font-bold text-slate-500">مشروط</td>
-                                <td class="p-4 border border-slate-200 text-sm italic">بعد از تکمیل و ارائه پروپزال نهایی کمپین نوروزی مشخص می‌شود.</td>
-                            </tr>
-                            <tr>
-                                <td class="p-4 border border-slate-200 text-center font-bold">۸</td>
-                                <td class="p-4 border border-slate-200 font-bold">سایر موارد (نامشخص)</td>
-                                <td class="p-4 border border-slate-200 text-center text-slate-500">---</td>
-                                <td class="p-4 border border-slate-200 text-sm">شامل ساماندهی لایت‌باکس‌ها، جوایز اهدایی غرفه‌ها و...</td>
-                            </tr>
-                        </tbody>
-                        <tfoot class="bg-slate-100 font-bold print:bg-gray-100">
-                            <tr>
-                                <td colspan="2" class="p-4 text-left">جمع کل برآورد اولیه (تومان):</td>
-                                <td class="p-4 text-center font-mono text-xl text-royal-800">~ ۲۲۰ تا ۲۷۵ میلیون</td>
-                                <td class="p-4 text-xs text-slate-500 font-normal text-right">سقف نهایی پیش‌بینی شده ۳۵۰ میلیون تومان</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </section>
-
-            <!-- بخش ۶: بروزرسانی فاز پایانی -->
-            <section class="mt-8 mb-8 print-break-inside">
-                <div class="bg-blue-50 border-r-4 border-blue-500 p-6 rounded-lg print:border-black print:bg-transparent print:border">
-                    <div class="flex items-center gap-3 mb-2">
-                        <i class="fa-solid fa-sync text-blue-600 text-xl print:text-black"></i>
-                        <h3 class="font-bold text-lg text-blue-800 print:text-black">برنامه‌ریزی فاز پایانی (۲۰ روز آخر)</h3>
-                    </div>
-                    <p class="text-slate-700 text-sm leading-relaxed text-justify">
-                        با توجه به متغیرهای محیطی و اجرایی متعدد، برنامه عملیاتی مربوط به <strong>۲۰ روز پایانی کمپین</strong> (منتهی به ۱۵ فروردین)، مجدداً بازبینی و آپدیت شده و متعاقباً در قالب یک فایل ارائه جداگانه و تفصیلی ارسال خواهد شد.
-                    </p>
-                </div>
-            </section>
-
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-2 mb-8 bg-white/60 p-2 rounded-2xl shadow-sm border border-slate-100 backdrop-blur-sm">
+          <button
+            onClick={() => setActiveTab('infectious')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold transition-all duration-300 ${
+              activeTab === 'infectious' 
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-400 text-white shadow-md shadow-emerald-200 transform scale-[1.02]' 
+                : 'text-slate-600 hover:bg-white hover:shadow-sm'
+            }`}
+          >
+            <ActivityIcon size={20} />
+            بخش عفونی - گلستان
+          </button>
+          <button
+            onClick={() => setActiveTab('internal')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold transition-all duration-300 ${
+              activeTab === 'internal' 
+                ? 'bg-gradient-to-r from-blue-500 to-indigo-400 text-white shadow-md shadow-blue-200 transform scale-[1.02]' 
+                : 'text-slate-600 hover:bg-white hover:shadow-sm'
+            }`}
+          >
+            <UserIcon size={20} />
+            بخش داخلی - گلستان
+          </button>
+          <button
+            onClick={() => setActiveTab('shafa')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold transition-all duration-300 ${
+              activeTab === 'shafa' 
+                ? 'bg-gradient-to-r from-purple-500 to-fuchsia-400 text-white shadow-md shadow-purple-200 transform scale-[1.02]' 
+                : 'text-slate-600 hover:bg-white hover:shadow-sm'
+            }`}
+          >
+            <HospitalIcon size={20} />
+            بیمارستان شفا
+          </button>
         </div>
 
-        <!-- فوتر -->
-        <footer class="bg-slate-100 p-6 border-t border-slate-200 print:bg-white print:border-t-2 print:border-black">
-            <div class="flex justify-between items-center text-sm text-slate-500 print:text-black">
-                <div>تاریخ به‌روزرسانی: بهمن ۱۴۰۴</div>
-                <div class="flex gap-10">
-                    <span>امضاء مسئول مارکتینگ: .................</span>
-                    <span>امضاء مدیریت: .................</span>
-                </div>
+        {/* Tab Content */}
+        <div className="transition-all duration-300 min-h-[500px]">
+          {activeTab === 'infectious' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <StatsGrid stats={infectiousStats} colorClass="border-emerald-300" />
+              <SingleColumnTable data={infectiousData} title="لیست کشیک روزانه بخش عفونی" colorClass="border-emerald-300" />
             </div>
-        </footer>
+          )}
 
+          {activeTab === 'internal' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <StatsGrid stats={internalStats} colorClass="border-blue-300" />
+              <SingleColumnTable data={internalData} title="لیست کشیک روزانه بخش داخلی" colorClass="border-blue-300" />
+            </div>
+          )}
+
+          {activeTab === 'shafa' && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <StatsGrid stats={shafaStats} colorClass="border-purple-300" />
+              <MultiColumnTable data={shafaData} title="لیست کشیک بیمارستان شفا (صبح، عصر، شب)" colorClass="border-purple-300" />
+            </div>
+          )}
+        </div>
+
+      </div>
     </div>
-
-</body>
-</html>
+  );
+}
