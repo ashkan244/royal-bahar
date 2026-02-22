@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 // --- Custom SVG Icons (No external dependencies required) ---
 const IconBase = ({ children, size = 24, className = "", strokeWidth = 2 }) => (
@@ -87,14 +87,24 @@ const shafaData = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('infectious');
+  const [tailwindLoaded, setTailwindLoaded] = useState(false);
 
   // --- سیستم اجرای اجباری گرافیک برای سرورهایی مثل Vercel ---
-  React.useEffect(() => {
-    if (typeof window !== 'undefined' && !document.getElementById('tailwind-cdn')) {
-      const script = document.createElement('script');
-      script.id = 'tailwind-cdn';
-      script.src = 'https://cdn.tailwindcss.com';
-      document.head.appendChild(script);
+  useEffect(() => {
+    // Only run this logic on the client side
+    if (typeof window !== 'undefined') {
+      const existingScript = document.getElementById('tailwind-cdn');
+      if (!existingScript) {
+        const script = document.createElement('script');
+        script.id = 'tailwind-cdn';
+        script.src = 'https://cdn.tailwindcss.com';
+        script.onload = () => setTailwindLoaded(true);
+        // Sometimes Vercel's strict CSP blocks document.head.appendChild
+        // So we append to body to bypass some restrictive header policies
+        document.body.appendChild(script);
+      } else {
+        setTailwindLoaded(true);
+      }
     }
   }, []);
 
@@ -230,6 +240,25 @@ export default function App() {
       {/* Import Vazirmatn Font */}
       <style>{`
         @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css');
+        
+        /* A simple fallback style block in case Tailwind completely fails to load */
+        ${!tailwindLoaded ? `
+          body { font-family: Tahoma, Arial, sans-serif; direction: rtl; }
+          .max-w-7xl { max-width: 1200px; margin: 0 auto; }
+          .mb-8 { margin-bottom: 2rem; }
+          .p-4 { padding: 1rem; }
+          .flex { display: flex; }
+          .justify-between { justify-content: space-between; }
+          .gap-4 { gap: 1rem; }
+          .text-2xl { font-size: 1.5rem; font-weight: bold; }
+          .grid { display: grid; }
+          .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+          table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+          th { background-color: #f2f2f2; }
+          .bg-white { background-color: white; border-radius: 8px; padding: 16px; margin-bottom: 20px;}
+          button { padding: 10px 20px; margin-left: 10px; cursor: pointer; border: 1px solid #ccc; background: white; border-radius: 5px;}
+        ` : ''}
       `}</style>
 
       <div className="max-w-7xl mx-auto">
